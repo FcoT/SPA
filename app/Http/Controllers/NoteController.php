@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Note;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class NoteController extends Controller
 {
@@ -14,7 +15,8 @@ class NoteController extends Controller
      */
     public function index()
     {
-        //
+        $notes = Note::latest()->get();
+        return Inertia::render('Notes/Index', compact('notes'));
     }
 
     /**
@@ -30,10 +32,10 @@ class NoteController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request  $r
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $r)
     {
         //
     }
@@ -46,7 +48,7 @@ class NoteController extends Controller
      */
     public function show(Note $note)
     {
-        //
+        return Inertia::render('Notes/Show', compact('note'));
     }
 
     /**
@@ -57,19 +59,26 @@ class NoteController extends Controller
      */
     public function edit(Note $note)
     {
-        //
+        return Inertia::render('Notes/Edit', compact('note'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request  $r
      * @param  \App\Models\Note  $note
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Note $note)
+    public function update(Request $r, Note $note)
     {
-        //
+        $r->validate([
+            'excerpt' => 'required',
+            'content' => 'required'
+        ]);
+
+        $note->update($r->all());
+
+        return redirect()->route('notes.index');
     }
 
     /**
